@@ -1,4 +1,53 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+
+    // ===================================================================
+    // --- PHẦN MỚI: ĐIỀU KHIỂN ÂM NHẠC ---
+    // ===================================================================
+    const music = document.getElementById('background-music');
+    const musicControl = document.getElementById('music-control');
+    const speakerIcon = document.getElementById('speaker-icon');
+    
+    // Đường dẫn tới 2 ảnh loa của bạn
+    const speakerOnIcon = 'imagesthiepcuoi/speaker-on.png';
+    const speakerOffIcon = 'imagesthiepcuoi/speaker-off.png';
+
+    let hasInteracted = false; // Biến để kiểm tra người dùng đã tương tác lần đầu chưa
+
+    // Hàm để bật nhạc và đổi icon
+    function playMusic() {
+        music.muted = false;
+        music.play().catch(error => console.log("Lỗi phát nhạc: ", error));
+        speakerIcon.src = speakerOnIcon;
+        musicControl.classList.add('playing');
+    }
+
+    // Hàm để tắt nhạc và đổi icon
+    function pauseMusic() {
+        music.muted = true;
+        speakerIcon.src = speakerOffIcon;
+        musicControl.classList.remove('playing');
+    }
+
+    // Sự kiện 1: Tự động bật nhạc KHI NGƯỜI DÙNG CHẠM VÀO MÀN HÌNH LẦN ĐẦU TIÊN
+    document.body.addEventListener('click', function() {
+        if (!hasInteracted) {
+            playMusic();
+            hasInteracted = true; // Đánh dấu là đã tương tác
+        }
+    }, { once: true }); // { once: true } để sự kiện này chỉ chạy 1 lần duy nhất
+
+    // Sự kiện 2: Bật/tắt nhạc KHI BẤM VÀO NÚT LOA
+    musicControl.addEventListener('click', function(event) {
+        event.stopPropagation(); // Ngăn sự kiện click vào nút loa làm chạy sự kiện click của body
+        if (music.muted) {
+            playMusic();
+        } else {
+            pauseMusic();
+        }
+    });
+
+
     
     // --- PHẦN 1: ĐIỀU KHIỂN HIỆU ỨNG RÈM CỬA ---
     const curtainContainer = document.getElementById('curtain-container'); // Thêm dòng này

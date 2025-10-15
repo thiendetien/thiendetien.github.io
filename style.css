@@ -875,3 +875,49 @@ body {
         width: 100%;
     }
 }
+
+/* =================================================================== */
+/* --- PHẦN THÊM MỚI: CSS CHO NÚT ĐIỀU KHIỂN NHẠC --- */
+/* =================================================================== */
+#music-control {
+    position: fixed; /* Nằm cố định trên màn hình */
+    bottom: 20px;    /* Cách lề dưới 20px */
+    left: 20px;      /* Cách lề trái 20px */
+    z-index: 9998;   /* Nổi lên trên các nội dung khác */
+    
+    width: 45px;     /* Kích thước nút */
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.8); /* Nền trắng mờ */
+    border-radius: 50%; /* Bo tròn thành hình tròn */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng cho đẹp */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    cursor: pointer; /* Biến con trỏ thành hình bàn tay khi di chuột vào */
+    transition: transform 0.2s ease;
+}
+
+#music-control:hover {
+    transform: scale(1.1); /* Phóng to một chút khi di chuột vào */
+}
+
+#music-control img {
+    width: 40px;   /* Kích thước ảnh loa bên trong */
+    height: 40px;
+}
+
+/* Thêm animation xoay tròn cho icon khi nhạc đang phát */
+#music-control.playing img {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
