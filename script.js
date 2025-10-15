@@ -1,45 +1,64 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 
-    // ===================================================================
-    // --- PHẦN MỚI: ĐIỀU KHIỂN ÂM NHẠC ---
+     // ===================================================================
+    // --- PHẦN MỚI: ĐIỀU KHIỂN ÂM NHẠC (PHIÊN BẢN CẢI TIẾN) ---
     // ===================================================================
     const music = document.getElementById('background-music');
     const musicControl = document.getElementById('music-control');
     const speakerIcon = document.getElementById('speaker-icon');
     
-    // Đường dẫn tới 2 ảnh loa của bạn
     const speakerOnIcon = 'imagesthiepcuoi/speaker-on.png';
     const speakerOffIcon = 'imagesthiepcuoi/speaker-off.png';
 
-    let hasInteracted = false; // Biến để kiểm tra người dùng đã tương tác lần đầu chưa
+    // Biến này vẫn rất quan trọng để đảm bảo nhạc chỉ được bật 1 lần duy nhất
+    let hasInteracted = false; 
 
-    // Hàm để bật nhạc và đổi icon
     function playMusic() {
         music.muted = false;
-        music.play().catch(error => console.log("Lỗi phát nhạc: ", error));
+        // Lệnh play() có thể bị lỗi trên một số trình duyệt nếu không có tương tác,
+        // nên ta dùng .catch() để không bị báo lỗi đỏ trên console.
+        music.play().catch(error => console.log("Trình duyệt cần tương tác để phát nhạc."));
         speakerIcon.src = speakerOnIcon;
         musicControl.classList.add('playing');
     }
 
-    // Hàm để tắt nhạc và đổi icon
     function pauseMusic() {
         music.muted = true;
         speakerIcon.src = speakerOffIcon;
         musicControl.classList.remove('playing');
     }
 
-    // Sự kiện 1: Tự động bật nhạc KHI NGƯỜI DÙNG CHẠM VÀO MÀN HÌNH LẦN ĐẦU TIÊN
-    document.body.addEventListener('click', function() {
-        if (!hasInteracted) {
-            playMusic();
-            hasInteracted = true; // Đánh dấu là đã tương tác
+    // --- ĐÂY LÀ THAY ĐỔI QUAN TRỌNG ---
+    // Tạo một hàm duy nhất để xử lý tương tác đầu tiên
+    function handleFirstInteraction() {
+        // Nếu đã tương tác rồi thì không làm gì cả
+        if (hasInteracted) {
+            return;
         }
-    }, { once: true }); // { once: true } để sự kiện này chỉ chạy 1 lần duy nhất
+        // Đánh dấu là đã tương tác
+        hasInteracted = true;
+        
+        // Bật nhạc
+        playMusic();
 
-    // Sự kiện 2: Bật/tắt nhạc KHI BẤM VÀO NÚT LOA
+        // Gỡ bỏ các sự kiện lắng nghe này đi để tiết kiệm tài nguyên
+        // vì chúng ta chỉ cần chúng chạy đúng một lần duy nhất
+        window.removeEventListener('scroll', handleFirstInteraction);
+        window.removeEventListener('touchstart', handleFirstInteraction);
+        document.body.removeEventListener('click', handleFirstInteraction);
+    }
+
+    // Lắng nghe nhiều loại sự kiện: vuốt (scroll), chạm (touchstart) và click.
+    // Sự kiện nào xảy ra trước sẽ kích hoạt hàm handleFirstInteraction.
+    window.addEventListener('scroll', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    document.body.addEventListener('click', handleFirstInteraction);
+    // --- KẾT THÚC THAY ĐỔI ---
+
+    // Sự kiện bật/tắt nhạc khi bấm vào nút loa (giữ nguyên như cũ)
     musicControl.addEventListener('click', function(event) {
-        event.stopPropagation(); // Ngăn sự kiện click vào nút loa làm chạy sự kiện click của body
+        event.stopPropagation(); 
         if (music.muted) {
             playMusic();
         } else {
